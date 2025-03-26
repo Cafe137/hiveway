@@ -11,7 +11,7 @@ import {
     SettingsRowId
 } from './database/Schema'
 import { logger } from './logger'
-import { StampManager } from './stamps'
+import { StampManager } from './stamp'
 
 export const GET_PROXY_ENDPOINTS = ['/chunks/*', '/bytes/*', '/bzz/*', '/feeds/*']
 export const POST_PROXY_ENDPOINTS = ['/chunks', '/bytes', '/bzz', '/soc/*', '/feeds/*']
@@ -31,7 +31,7 @@ interface Options {
     beeApiUrl: string
     removePinHeader: boolean
     instanceName?: string
-    stampManager: StampManager | null
+    stampManager: StampManager
     hostname?: string
     remap: Record<string, string>
 }
@@ -92,8 +92,8 @@ async function fetchAndRespond(
     }
 
     try {
-        if (method === 'POST' && options.stampManager) {
-            headers[SWARM_STAMP_HEADER] = options.stampManager.postageStamp
+        if (method === 'POST' && options.stampManager.enabled) {
+            headers[SWARM_STAMP_HEADER] = options.stampManager.getPostageStamp()
         }
         let response = await axios({
             method,

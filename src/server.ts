@@ -10,9 +10,9 @@ import { logger } from './logger'
 import { register } from './metrics'
 import { createProxyEndpoints } from './proxy'
 import { checkReadiness } from './readiness'
-import { StampManager } from './stamps'
+import { StampManager } from './stamp'
 
-export const createApp = (config: AppConfig, stampManager?: StampManager): Application => {
+export function createApp(config: AppConfig, stampManager: StampManager): Application {
     const bee = new Bee(config.beeApiUrl)
     const app = express()
 
@@ -121,7 +121,7 @@ export const createApp = (config: AppConfig, stampManager?: StampManager): Appli
     createProxyEndpoints(app, {
         beeApiUrl: config.beeApiUrl,
         removePinHeader: config.removePinHeader ?? true,
-        stampManager: stampManager ?? null,
+        stampManager,
         hostname: config.hostname,
         remap: Object.fromEntries(
             (Arrays.getArgument(process.argv, 'remap', process.env, 'REMAP') || '').split(';').map(x => x.split('='))
