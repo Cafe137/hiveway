@@ -84,7 +84,13 @@ export class StampManager {
             logger.info('enabled stamp manager with hardcoded stamp')
         } else if (this.config.postageAmount && this.config.postageDepth) {
             this.enabled = true
-            System.forever(this.manageStamps, Dates.minutes(2), logger.error)
+            System.forever(
+                async () => {
+                    await this.manageStamps()
+                },
+                Dates.minutes(2),
+                logger.error
+            )
             logger.info('enabled stamp manager with autobuy')
         } else {
             logger.info('disabled stamp manager')
