@@ -122,10 +122,7 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
         beeApiUrl: config.beeApiUrl,
         removePinHeader: config.removePinHeader ?? true,
         stampManager,
-        hostname: config.hostname,
-        remap: Object.fromEntries(
-            (Arrays.getArgument(process.argv, 'remap', process.env, 'REMAP') || '').split(';').map(x => x.split('='))
-        )
+        hostname: config.hostname
     })
 
     if (config.homepage) {

@@ -33,6 +33,14 @@ export interface ReportsRow {
     createdAt: Date
 }
 
+export type RewritesRowId = number & { __brand: 'RewritesRowId' }
+export interface RewritesRow {
+    id: RewritesRowId
+    subdomain: string
+    target: string
+    createdAt: Date
+}
+
 export type RulesRowId = number & { __brand: 'RulesRowId' }
 export interface RulesRow {
     id: RulesRowId
@@ -57,6 +65,12 @@ export interface NewAllowedUserAgentsRow {
 export interface NewReportsRow {
     hash: string
     reason?: string | null
+    createdAt?: Date | null
+}
+
+export interface NewRewritesRow {
+    subdomain: string
+    target: string
     createdAt?: Date | null
 }
 
@@ -126,6 +140,30 @@ export async function getOnlyReportsRowOrThrow(
     return getOnlyRowOrThrow('SELECT * FROM proxy.reports' + query, ...values) as unknown as ReportsRow
 }
 
+export async function getRewritesRows(
+    filter?: Partial<RewritesRow>,
+    options?: SelectOptions<RewritesRow>
+): Promise<RewritesRow[]> {
+    const [query, values] = buildSelect(filter, options)
+    return getRows('SELECT * FROM proxy.rewrites' + query, ...values) as unknown as RewritesRow[]
+}
+
+export async function getOnlyRewritesRowOrNull(
+    filter?: Partial<RewritesRow>,
+    options?: SelectOptions<RewritesRow>
+): Promise<RewritesRow | null> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrNull('SELECT * FROM proxy.rewrites' + query, ...values) as unknown as RewritesRow | null
+}
+
+export async function getOnlyRewritesRowOrThrow(
+    filter?: Partial<RewritesRow>,
+    options?: SelectOptions<RewritesRow>
+): Promise<RewritesRow> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrThrow('SELECT * FROM proxy.rewrites' + query, ...values) as unknown as RewritesRow
+}
+
 export async function getRulesRows(filter?: Partial<RulesRow>, options?: SelectOptions<RulesRow>): Promise<RulesRow[]> {
     const [query, values] = buildSelect(filter, options)
     return getRows('SELECT * FROM proxy.rules' + query, ...values) as unknown as RulesRow[]
@@ -193,6 +231,17 @@ export async function updateReportsRow(
     return update('proxy.reports', id, object, atomicHelper)
 }
 
+export async function updateRewritesRow(
+    id: RewritesRowId,
+    object: Partial<NewRewritesRow>,
+    atomicHelper?: {
+        key: keyof NewRewritesRow
+        value: unknown
+    }
+): Promise<number> {
+    return update('proxy.rewrites', id, object, atomicHelper)
+}
+
 export async function updateRulesRow(
     id: RulesRowId,
     object: Partial<NewRulesRow>,
@@ -224,6 +273,10 @@ export async function insertAllowedUserAgentsRow(object: NewAllowedUserAgentsRow
 
 export async function insertReportsRow(object: NewReportsRow): Promise<ReportsRowId> {
     return insert('proxy.reports', object as unknown as Record<string, unknown>) as Promise<ReportsRowId>
+}
+
+export async function insertRewritesRow(object: NewRewritesRow): Promise<RewritesRowId> {
+    return insert('proxy.rewrites', object as unknown as Record<string, unknown>) as Promise<RewritesRowId>
 }
 
 export async function insertRulesRow(object: NewRulesRow): Promise<RulesRowId> {

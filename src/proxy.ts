@@ -33,7 +33,6 @@ interface Options {
     instanceName?: string
     stampManager: StampManager
     hostname?: string
-    remap: Record<string, string>
 }
 
 export function createProxyEndpoints(app: Application, options: Options) {
@@ -46,9 +45,8 @@ export function createProxyEndpoints(app: Application, options: Options) {
         }
 
         try {
-            const newUrl = subdomainToBzz(
-                subdomain.slice(0, -1), // remove trailing dot
-                options.remap
+            const newUrl = await subdomainToBzz(
+                subdomain.slice(0, -1) // remove trailing dot
             )
             await fetchAndRespond(
                 'GET',
