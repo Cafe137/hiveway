@@ -10,9 +10,9 @@
     "dependencies": {
         "@ethersphere/bee-js": "^9.0.3",
         "axios": "^0.29.0",
-        "body-parser": "^1.20.2",
+        "body-parser": "^1.20.3",
         "cafe-utility": "^27.14.2",
-        "express": "^4.18.1",
+        "express": "^4.21.2",
         "mysql2": "^3.14.0",
         "prom-client": "^14.1.0",
         "request-stats": "^3.0.0",
