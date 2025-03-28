@@ -26,6 +26,12 @@ export interface StampConfig {
     postageKeepAlive: boolean
 }
 
+export interface TcpProxyConfig {
+    sourcePort: number
+    destinationHost: string
+    destinationPort: number
+}
+
 export type EnvironmentVariables = Partial<{
     // Logging
     LOG_LEVEL: string
@@ -58,6 +64,11 @@ export type EnvironmentVariables = Partial<{
 
     // Homepage
     HOMEPAGE: string
+
+    // TCP Proxy
+    TCP_PROXY_SOURCE_PORT: string
+    TCP_PROXY_DESTINATION_HOST: string
+    TCP_PROXY_DESTINATION_PORT: string
 }>
 
 export const SUPPORTED_LEVELS = ['critical', 'error', 'warn', 'info', 'verbose', 'debug'] as const
@@ -100,5 +111,16 @@ export function getStampConfig(env: EnvironmentVariables): StampConfig {
             Types.asNullable(Types.asNumber, env.POSTAGE_THRESHOLD_SECONDS) || Duration.fromHours(1).toSeconds(),
         postageThresholdUsage: Types.asNullable(Types.asNumber, env.POSTAGE_THRESHOLD_USAGE) || 0.85,
         postageKeepAlive: env.POSTAGE_KEEP_ALIVE ? env.POSTAGE_KEEP_ALIVE === 'true' : false
+    }
+}
+
+export function getTcpProxyConfig(env: EnvironmentVariables): TcpProxyConfig | null {
+    if (!env.TCP_PROXY_SOURCE_PORT || !env.TCP_PROXY_DESTINATION_HOST || !env.TCP_PROXY_DESTINATION_PORT) {
+        return null
+    }
+    return {
+        sourcePort: Types.asNumber(env.TCP_PROXY_SOURCE_PORT),
+        destinationHost: env.TCP_PROXY_DESTINATION_HOST,
+        destinationPort: Types.asNumber(env.TCP_PROXY_DESTINATION_PORT)
     }
 }

@@ -57,6 +57,14 @@ export interface SettingsRow {
     defaultFileRule: 'allow' | 'deny'
 }
 
+export type TcpProxySourcesRowId = number & { __brand: 'TcpProxySourcesRowId' }
+export interface TcpProxySourcesRow {
+    id: TcpProxySourcesRowId
+    name: string
+    origin: string
+    createdAt: Date
+}
+
 export interface NewAllowedUserAgentsRow {
     userAgent: string
     createdAt?: Date | null
@@ -84,6 +92,12 @@ export interface NewSettingsRow {
     name: string
     defaultWebsiteRule: 'allow' | 'deny'
     defaultFileRule: 'allow' | 'deny'
+}
+
+export interface NewTcpProxySourcesRow {
+    name: string
+    origin: string
+    createdAt?: Date | null
 }
 
 export async function getAllowedUserAgentsRows(
@@ -209,6 +223,33 @@ export async function getOnlySettingsRowOrThrow(
     return getOnlyRowOrThrow('SELECT * FROM proxy.settings' + query, ...values) as unknown as SettingsRow
 }
 
+export async function getTcpProxySourcesRows(
+    filter?: Partial<TcpProxySourcesRow>,
+    options?: SelectOptions<TcpProxySourcesRow>
+): Promise<TcpProxySourcesRow[]> {
+    const [query, values] = buildSelect(filter, options)
+    return getRows('SELECT * FROM proxy.tcpProxySources' + query, ...values) as unknown as TcpProxySourcesRow[]
+}
+
+export async function getOnlyTcpProxySourcesRowOrNull(
+    filter?: Partial<TcpProxySourcesRow>,
+    options?: SelectOptions<TcpProxySourcesRow>
+): Promise<TcpProxySourcesRow | null> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrNull(
+        'SELECT * FROM proxy.tcpProxySources' + query,
+        ...values
+    ) as unknown as TcpProxySourcesRow | null
+}
+
+export async function getOnlyTcpProxySourcesRowOrThrow(
+    filter?: Partial<TcpProxySourcesRow>,
+    options?: SelectOptions<TcpProxySourcesRow>
+): Promise<TcpProxySourcesRow> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrThrow('SELECT * FROM proxy.tcpProxySources' + query, ...values) as unknown as TcpProxySourcesRow
+}
+
 export async function updateAllowedUserAgentsRow(
     id: AllowedUserAgentsRowId,
     object: Partial<NewAllowedUserAgentsRow>,
@@ -264,6 +305,17 @@ export async function updateSettingsRow(
     return update('proxy.settings', id, object, atomicHelper)
 }
 
+export async function updateTcpProxySourcesRow(
+    id: TcpProxySourcesRowId,
+    object: Partial<NewTcpProxySourcesRow>,
+    atomicHelper?: {
+        key: keyof NewTcpProxySourcesRow
+        value: unknown
+    }
+): Promise<number> {
+    return update('proxy.tcpProxySources', id, object, atomicHelper)
+}
+
 export async function insertAllowedUserAgentsRow(object: NewAllowedUserAgentsRow): Promise<AllowedUserAgentsRowId> {
     return insert(
         'proxy.allowedUserAgents',
@@ -285,4 +337,11 @@ export async function insertRulesRow(object: NewRulesRow): Promise<RulesRowId> {
 
 export async function insertSettingsRow(object: NewSettingsRow): Promise<SettingsRowId> {
     return insert('proxy.settings', object as unknown as Record<string, unknown>) as Promise<SettingsRowId>
+}
+
+export async function insertTcpProxySourcesRow(object: NewTcpProxySourcesRow): Promise<TcpProxySourcesRowId> {
+    return insert(
+        'proxy.tcpProxySources',
+        object as unknown as Record<string, unknown>
+    ) as Promise<TcpProxySourcesRowId>
 }
