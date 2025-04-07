@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="icon" href="favicon.ico" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="theme-color" content="#f9f9f9" />
+        <title>Request Approval</title>
+        <style>
+            @font-face {
+                font-family: 'iAWriterQuattroV';
+                src: url('iAWriterQuattroV.ttf');
+            }
+            @font-face {
+                font-family: 'iAWriterMonoV';
+                src: url('iAWriterMonoV.ttf');
+            }
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html {
+                background: rgb(12, 17, 21);
+            }
+            html,
+            body {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                align-items: center;
+                justify-content: space-between;
+                font-family: 'iAWriterQuattroV';
+                color: #ffffff;
+                margin: 0px;
+                padding: 0px;
+            }
+            section,
+            footer {
+                display: flex;
+                flex-direction: column;
+                align-content: center;
+                margin: 0px;
+                padding: 0px;
+                max-width: 700px;
+                gap: 16px;
+            }
+            footer {
+                margin-bottom: 16px;
+            }
+            body {
+                padding: 16px;
+            }
+            img.logo {
+                margin-top: 16px;
+                display: flex;
+                width: 150px;
+                height: 29px;
+                align-self: center;
+                color: #fff;
+            }
+            h1.welcome {
+                font-size: 1.35rem;
+                display: flex;
+                align-self: center;
+                text-align: center;
+                margin: 0;
+                margin-bottom: 16px;
+            }
+            p.explanation {
+                font-size: 1rem;
+                text-align: justify;
+                text-align-last: center;
+                margin-bottom: 20px;
+            }
+            p.footnote {
+                font-size: 0.875rem;
+                display: flex;
+                align-self: center;
+                max-width: 700px;
+                text-align: center;
+                color: #8b949e;
+            }
+            .separator {
+                width: 700px;
+                max-width: 100%;
+                height: 1px;
+                background-color: #8b949e;
+                display: flex;
+                align-self: center;
+                border-style: none;
+                margin: 16px 0px;
+            }
+            ul.links {
+                display: flex;
+                align-self: center;
+                justify-content: center;
+                flex-direction: row;
+                flex-wrap: wrap;
+                list-style-type: none;
+                padding: 0;
+            }
+            a.link {
+                font-family: 'iAWriterMonoV';
+                font-size: smaller;
+                color: #6c6c6c;
+                padding: 0 10px;
+            }
+            input {
+                width: 700px;
+                max-width: 100%;
+                background-color: #161b22;
+                border-radius: 8px;
+                border: 1px solid #30363d;
+                padding: 14px;
+                font-size: 16px;
+                color: #ffffff;
+                font-family: 'iAWriterQuattroV';
+            }
+            button {
+                margin-top: 12px;
+                background: #ff7a00;
+                color: #ffffff;
+                border: 0;
+                outline: 0;
+                border-radius: 8px;
+                font-weight: 700;
+                padding: 14px;
+                font-size: 16px;
+                font-family: 'iAWriterQuattroV';
+            }
+            button:hover {
+                filter: brightness(1.25);
+                cursor: pointer;
+            }
+            label {
+                color: #8b949e;
+                font-size: 14px;
+            }
+            .input {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                width: 700px;
+                max-width: 100%;
+            }
+            .gap-20 {
+                gap: 20px;
+            }
+            .card {
+                background: #1e232880;
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                align-content: center;
+                margin: 0px;
+                padding: 0px;
+                max-width: 700px;
+                gap: 16px;
+                padding: 25px;
+            }
+            video {
+                position: fixed;
+                top: 50%;
+                right: 0;
+                transform: translateY(-50%);
+                height: 100%;
+                object-fit: cover;
+                z-index: -1;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+            .snackbar {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #333;
+                color: #fff;
+                padding: 16px;
+                border-radius: 4px;
+            }
+            .snackbar-fade-in {
+                animation: fadeIn 0.5s forwards;
+            }
+            .snackbar-fade-out {
+                animation: fadeOut 0.5s forwards;
+            }
+        </style>
+    </head>
+    <body>
+        <video autoplay muted>
+            <source src="background.mp4" type="video/mp4" />
+        </video>
+        <img class="logo" src="logo.svg" />
+        <div class="card">
+            <section>
+                <h1 class="welcome">Request Approval for This Hash</h1>
+                <p class="explanation">
+                    This hash is not yet approved for retrieval from the Swarm network. To proceed, please complete the
+                    approval request form below, or run your own Bee node for unrestricted access.
+                </p>
+            </section>
+            <section class="gap-20">
+                <div class="input">
+                    <label>Reference</label>
+                    <input type="text" id="hash" placeholder="Enter the hash to be approved" />
+                </div>
+                <div class="input">
+                    <label>ENS (optional)</label>
+                    <input type="text" id="ens" placeholder="Enter ENS (optional)" />
+                </div>
+                <button id="submit">Submit</button>
+            </section>
+        </div>
+        <footer>
+            <hr class="separator" />
+            <ul class="links">
+                <li><a class="link" href="https://ethswarm.org/">Swarm Website</a></li>
+                <li><a class="link" href="https://ethswarm.org/faq">FAQ</a></li>
+                <li><a class="link" href="https://discord.gg/wdghaQsGq5">Discord</a></li>
+                <li><a class="link" href="https://github.com/ethersphere">Github</a></li>
+            </ul>
+        </footer>
+        <script>
+            if (window.location.search && window.location.search) {
+                let hash = window.location.search.split('=')[1]
+                if (hash.startsWith('0x')) {
+                    hash = hash.slice(2)
+                }
+                if (hash.toLowerCase().match(/^[0-9a-f]{64}$/)) {
+                    document.getElementById('hash').value = hash
+                }
+            }
+            function snackbar(message, type) {
+                const existingNodes = document.querySelectorAll('.snackbar')
+                for (const node of existingNodes) {
+                    node.remove()
+                }
+                const node = document.createElement('div')
+                node.className = 'snackbar snackbar-fade-in'
+                if (type === 'error') {
+                    node.style.borderLeft = '4px solid #f44336'
+                } else if (type === 'success') {
+                    node.style.borderLeft = '4px solid #4CAF50'
+                } else {
+                    node.style.borderLeft = '4px solid #2196F3'
+                }
+                node.innerText = message
+                document.body.appendChild(node)
+                setTimeout(() => {
+                    node.classList.remove('snackbar-fade-in')
+                    node.classList.add('snackbar-fade-out')
+                    setTimeout(() => {
+                        node.remove()
+                    }, 600)
+                }, 2000)
+            }
+            document.getElementById('submit').addEventListener('click', async () => {
+                let hash = document.getElementById('hash').value
+                if (!hash) {
+                    snackbar('Please enter a hash to be approved.', 'error')
+                    return
+                }
+                if (hash.startsWith('0x')) {
+                    hash = hash.slice(2)
+                }
+                if (!hash.toLowerCase().match(/^[0-9a-f]{64}$/)) {
+                    snackbar('Invalid hash format. Please enter a valid hash.', 'error')
+                    return
+                }
+                const ens = document.getElementById('ens').value || null
+                try {
+                    const response = await fetch('/moderation/approval', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ hash, ens })
+                    })
+                    if (response.status === 200) {
+                        snackbar('Request submitted successfully!', 'success')
+                        document.getElementById('hash').value = ''
+                        document.getElementById('ens').value = ''
+                    } else {
+                        snackbar('Failed to submit request. Please try again.', 'error')
+                    }
+                } catch (error) {
+                    console.error('Error submitting request:', error)
+                    snackbar('An error occurred. Please try again.', 'error')
+                }
+            })
+        </script>
+    </body>
+</html>

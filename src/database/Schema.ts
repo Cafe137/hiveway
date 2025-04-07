@@ -25,6 +25,14 @@ export interface AllowedUserAgentsRow {
     createdAt: Date
 }
 
+export type ApprovalRequestsRowId = number & { __brand: 'ApprovalRequestsRowId' }
+export interface ApprovalRequestsRow {
+    id: ApprovalRequestsRowId
+    hash: string
+    ens?: string | null
+    createdAt: Date
+}
+
 export type ReportsRowId = number & { __brand: 'ReportsRowId' }
 export interface ReportsRow {
     id: ReportsRowId
@@ -67,6 +75,12 @@ export interface TcpProxySourcesRow {
 
 export interface NewAllowedUserAgentsRow {
     userAgent: string
+    createdAt?: Date | null
+}
+
+export interface NewApprovalRequestsRow {
+    hash: string
+    ens?: string | null
     createdAt?: Date | null
 }
 
@@ -128,6 +142,36 @@ export async function getOnlyAllowedUserAgentsRowOrThrow(
         'SELECT * FROM proxy.allowedUserAgents' + query,
         ...values
     ) as unknown as AllowedUserAgentsRow
+}
+
+export async function getApprovalRequestsRows(
+    filter?: Partial<ApprovalRequestsRow>,
+    options?: SelectOptions<ApprovalRequestsRow>
+): Promise<ApprovalRequestsRow[]> {
+    const [query, values] = buildSelect(filter, options)
+    return getRows('SELECT * FROM proxy.approvalRequests' + query, ...values) as unknown as ApprovalRequestsRow[]
+}
+
+export async function getOnlyApprovalRequestsRowOrNull(
+    filter?: Partial<ApprovalRequestsRow>,
+    options?: SelectOptions<ApprovalRequestsRow>
+): Promise<ApprovalRequestsRow | null> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrNull(
+        'SELECT * FROM proxy.approvalRequests' + query,
+        ...values
+    ) as unknown as ApprovalRequestsRow | null
+}
+
+export async function getOnlyApprovalRequestsRowOrThrow(
+    filter?: Partial<ApprovalRequestsRow>,
+    options?: SelectOptions<ApprovalRequestsRow>
+): Promise<ApprovalRequestsRow> {
+    const [query, values] = buildSelect(filter, options)
+    return getOnlyRowOrThrow(
+        'SELECT * FROM proxy.approvalRequests' + query,
+        ...values
+    ) as unknown as ApprovalRequestsRow
 }
 
 export async function getReportsRows(
@@ -261,6 +305,17 @@ export async function updateAllowedUserAgentsRow(
     return update('proxy.allowedUserAgents', id, object, atomicHelper)
 }
 
+export async function updateApprovalRequestsRow(
+    id: ApprovalRequestsRowId,
+    object: Partial<NewApprovalRequestsRow>,
+    atomicHelper?: {
+        key: keyof NewApprovalRequestsRow
+        value: unknown
+    }
+): Promise<number> {
+    return update('proxy.approvalRequests', id, object, atomicHelper)
+}
+
 export async function updateReportsRow(
     id: ReportsRowId,
     object: Partial<NewReportsRow>,
@@ -321,6 +376,13 @@ export async function insertAllowedUserAgentsRow(object: NewAllowedUserAgentsRow
         'proxy.allowedUserAgents',
         object as unknown as Record<string, unknown>
     ) as Promise<AllowedUserAgentsRowId>
+}
+
+export async function insertApprovalRequestsRow(object: NewApprovalRequestsRow): Promise<ApprovalRequestsRowId> {
+    return insert(
+        'proxy.approvalRequests',
+        object as unknown as Record<string, unknown>
+    ) as Promise<ApprovalRequestsRowId>
 }
 
 export async function insertReportsRow(object: NewReportsRow): Promise<ReportsRowId> {

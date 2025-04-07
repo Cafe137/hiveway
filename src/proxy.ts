@@ -155,15 +155,17 @@ async function fetchAndRespond(
             return rows.map(x => x.userAgent)
         })
 
-        const userAgentMantch = userAgents.some(x => headers['user-agent']?.toLowerCase().includes(x.toLowerCase()))
+        const userAgentMatch = userAgents.some(x => headers['user-agent']?.toLowerCase().includes(x.toLowerCase()))
 
-        if (userAgentMantch) {
+        let hash = null
+
+        if (userAgentMatch) {
             allowed = true
         } else {
             const currentCid = Strings.searchSubstring(path, x => x.length > 48 && x.startsWith('bah'))
             const currentHash = Strings.searchHex(path, 64)
-            const current = currentCid || currentHash
-            const rule = current ? await getOnlyRulesRowOrNull({ hash: current }) : null
+            hash = currentCid || currentHash
+            const rule = hash ? await getOnlyRulesRowOrNull({ hash }) : null
             if (rule?.mode === 'allow') {
                 allowed = true
             } else if (rule?.mode === 'deny') {
@@ -172,7 +174,11 @@ async function fetchAndRespond(
         }
 
         if (!allowed) {
-            res.sendStatus(403)
+            if (hash) {
+                res.redirect(`/forbidden?hash=${hash}`)
+            } else {
+                res.redirect('/forbidden')
+            }
             return
         }
 

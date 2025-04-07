@@ -5,7 +5,13 @@ import { Arrays, Strings, Types } from 'cafe-utility'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import { AppConfig } from './config'
 import { runQuery } from './database/Database'
-import { getReportsRows, getRulesRows, insertReportsRow, insertRulesRow } from './database/Schema'
+import {
+    getReportsRows,
+    getRulesRows,
+    insertApprovalRequestsRow,
+    insertReportsRow,
+    insertRulesRow
+} from './database/Schema'
 import { logger } from './logger'
 import { register } from './metrics'
 import { createProxyEndpoints } from './proxy'
@@ -74,8 +80,16 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
         }
     })
 
+    app.post('/moderation/approval', async (req, res) => {
+        const json = JSON.parse(req.body.toString())
+        const { hash, ens } = json
+        await insertApprovalRequestsRow({ hash: Types.asString(hash), ens: Types.asNullable(Types.asString, ens) })
+        res.sendStatus(200)
+    })
+
     app.post('/moderation/report', async (req, res) => {
-        const { hash, reason } = req.body
+        const json = JSON.parse(req.body.toString())
+        const { hash, reason } = json
         await insertReportsRow({ hash: Types.asString(hash), reason })
         res.sendStatus(200)
     })
@@ -102,13 +116,15 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
     })
 
     app.post('/moderation/allow', moderationGuard, async (req, res) => {
-        const { hash } = req.body
+        const json = JSON.parse(req.body.toString())
+        const { hash } = json
         await insertRulesRow({ hash: Types.asString(hash), mode: 'allow' })
         res.sendStatus(200)
     })
 
     app.post('/moderation/deny', moderationGuard, async (req, res) => {
-        const { hash } = req.body
+        const json = JSON.parse(req.body.toString())
+        const { hash } = json
         await insertRulesRow({ hash: Types.asString(hash), mode: 'allow' })
         res.sendStatus(200)
     })
@@ -151,7 +167,7 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
         })
     }
 
-    app.use(express.static('public'))
+    app.use(express.static('public', { extensions: ['html'] }))
 
     app.use((_req, res) => res.sendStatus(404))
 
