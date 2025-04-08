@@ -97,6 +97,9 @@ ul.links {
     list-style-type: none;
     padding: 0;
 }
+a {
+    color: #8b949e;
+}
 a.link {
     font-family: 'iAWriterMonoV';
     font-size: smaller;
@@ -196,4 +199,10 @@ video {
 }
 .snackbar-fade-out {
     animation: fadeOut 0.5s forwards;
+}
+code {
+    font-family: 'iAWriterMonoV';
+    background-color: #33333380;
+    border-radius: 4px;
+    padding: 0 4px;
 }
