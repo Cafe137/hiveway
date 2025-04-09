@@ -25,10 +25,10 @@ jobs:
               run: npm run build
 
             - name: Run bee-dev
-              run: nohup npx bee-dev &
+              run: npx bee-dev &
 
             - name: Wait for bee-dev
-              run: npx npxie await http://localhost:16337
+              run: npx npxie await http://localhost:16337/stamps
 
             - name: Run gateway once to buy batch
               run: TEMPORARY=5 BEE_API_URL=http://localhost:16337 POSTAGE_AMOUNT=414720000 POSTAGE_DEPTH=20 node dist
