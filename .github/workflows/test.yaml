@@ -1,0 +1,40 @@
+name: Test
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - '**'
+
+jobs:
+    build-js:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build
+              run: npm run build
+
+            - name: Run bee-dev
+              run: npx bee-dev &
+
+            - name: Wait for bee-dev
+              run: npx npxie await http://localhost:16337
+
+            - name: Run gateway once to buy batch
+              run: TEMPORARY=5 BEE_API_URL=http://localhost:16337 POSTAGE_AMOUNT=414720000 POSTAGE_DEPTH=20 node dist
+
+            - name: Verify batch has been bought
+              run: npx pixie json-equals http://localhost:16337/stamps stamps.length 1
+
+            - name: Stop bee-dev
+              run: curl -X POST http://localhost:16337/kill
