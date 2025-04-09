@@ -2,6 +2,16 @@
 
 ## Environment variables
 
+### Database
+
+The database configuration is expected to be set in the `DATABASE_CONFIG` environment variable. The format is a JSON string with the following fields:
+
+```
+{"user":"","password":"","host":"","port":-1,"database":"","ssl":{"ca": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"}}
+```
+
+### Overview
+
 | Name                      | Default Value             | Description                                       |
 | ------------------------- | ------------------------- | ------------------------------------------------- |
 | PORT                      | `3000`                    | Port of the proxy                                 |
