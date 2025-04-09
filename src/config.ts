@@ -48,9 +48,6 @@ export type EnvironmentVariables = Partial<{
     MODERATION_SECRET: string
     INSTANCE_NAME: string
 
-    // Identity
-    EXPOSE_HASHED_IDENTITY: string
-
     // Headers manipulation
     REMOVE_PIN_HEADER: string
 
