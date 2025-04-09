@@ -31,7 +31,7 @@ jobs:
               run: npx npxie await http://localhost:16337/stamps
 
             - name: Run gateway once to buy batch
-              run: TEMPORARY=5 BEE_API_URL=http://localhost:16337 POSTAGE_AMOUNT=414720000 POSTAGE_DEPTH=20 node dist
+              run: DATABASE_CONFIG={} TEMPORARY=5 BEE_API_URL=http://localhost:16337 POSTAGE_AMOUNT=414720000 POSTAGE_DEPTH=20 node dist
 
             - name: Verify batch has been bought
               run: npx pixie json-equals http://localhost:16337/stamps stamps.length 1
