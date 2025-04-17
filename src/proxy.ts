@@ -11,6 +11,7 @@ import {
     SettingsRowId
 } from './database/Schema'
 import { logger } from './logger'
+import { getNotFoundPage } from './not-found'
 import { StampManager } from './stamp'
 
 export const GET_PROXY_ENDPOINTS = ['/chunks/*', '/bytes/*', '/bzz/*', '/feeds/*']
@@ -120,6 +121,11 @@ async function fetchAndRespond(
             if (probeResponse.status >= 200 && probeResponse.status < 300) {
                 response = probeResponse
             }
+        }
+
+        if (response.status === 404 && Objects.getDeep(response, 'data.message') === 'address not found or incorrect') {
+            res.status(404).contentType('text/html').send(getNotFoundPage())
+            return
         }
 
         let isHtml = false
