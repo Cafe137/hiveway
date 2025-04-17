@@ -123,9 +123,15 @@ async function fetchAndRespond(
             }
         }
 
-        if (response.status === 404 && Objects.getDeep(response, 'data.message') === 'address not found or incorrect') {
-            res.status(404).contentType('text/html').send(getNotFoundPage())
-            return
+        if (response.status === 404) {
+            const sliceFn = Objects.getDeep(response.data, 'slice')
+            if (Types.isFunction(sliceFn)) {
+                const text = (sliceFn.call(response.data, 0, 100) as Buffer).toString('utf8')
+                if (text.includes('address not found or incorrect')) {
+                    res.status(404).contentType('text/html').send(getNotFoundPage())
+                    return
+                }
+            }
         }
 
         let isHtml = false
