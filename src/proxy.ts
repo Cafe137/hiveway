@@ -161,15 +161,13 @@ async function fetchAndRespond(
 
         if (userAgentMatch) {
             allowed = true
-        } else {
+        } else if (!allowed) {
             const currentCid = Strings.searchSubstring(path, x => x.length > 48 && x.startsWith('bah'))
             const currentHash = Strings.searchHex(path, 64)
             hash = currentCid || currentHash
             const rule = hash ? await getOnlyRulesRowOrNull({ hash }) : null
             if (rule?.mode === 'allow') {
                 allowed = true
-            } else if (rule?.mode === 'deny') {
-                allowed = false
             }
         }
 
