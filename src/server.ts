@@ -1,7 +1,7 @@
 import { Bee } from '@ethersphere/bee-js'
 import axios from 'axios'
 import bodyParser from 'body-parser'
-import { Arrays, Strings, Types } from 'cafe-utility'
+import { Arrays, Cache, Dates, Strings, Types } from 'cafe-utility'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import { AppConfig } from './config'
 import { runQuery } from './database/Database'
@@ -78,6 +78,26 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
         } else {
             res.sendStatus(503)
         }
+    })
+
+    app.get('/batch/:id', async (req, res) => {
+        const batchId = req.params.id
+        const batches = await Cache.get('batches', Dates.minutes(15), async () => bee.getAllGlobalPostageBatch())
+        const batch = batches.find(x => x.batchID.toHex() === batchId)
+        if (!batch) {
+            res.sendStatus(404)
+            return
+        }
+        res.send({
+            batchID: batch.batchID.toHex(),
+            value: batch.value,
+            start: batch.start,
+            owner: batch.owner.toChecksum(),
+            depth: batch.depth,
+            bucketDepth: batch.bucketDepth,
+            immutable: batch.immutable,
+            batchTTL: batch.batchTTL
+        })
     })
 
     app.post('/moderation/approval', async (req, res) => {
