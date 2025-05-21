@@ -1,4 +1,4 @@
-name: Test Rules
+name: Test Instance Defaults
 
 on:
     push:
@@ -9,7 +9,7 @@ on:
             - '**'
 
 jobs:
-    test-rules:
+    test-instance-defaults:
         runs-on: ubuntu-latest
         services:
             mariadb:
@@ -31,25 +31,25 @@ jobs:
 
             - uses: ./.github/actions/setup-env
 
-            - name: Insert rules
+            - name: Insert instance
               run: |
                   mysql -h 127.0.0.1 -u test_user -ptest_pass test_db -e "
-                    INSERT INTO rules (hash, mode) VALUES
-                      ('1000000000000000000000000000000000000000000000000000000000000000', 'allow'),
-                      ('f000000000000000000000000000000000000000000000000000000000000000', 'deny')
+                    INSERT INTO settings (name, defaultWebsiteRule, defaultFileRule) VALUES
+                      ('strict', 'deny', 'deny')
                     ;
                   "
 
             - name: Run gateway
               run: |
+                  export INSTANCE_NAME="strict"
                   export DATABASE_PASSWORD="test_pass"
                   export DATABASE_CONFIG="{\"user\":\"test_user\",\"database\":\"test_db\"}"
                   export TEMPORARY=5
                   export BEE_API_URL=http://localhost:16337
                   node dist > gateway.log 2>&1 < /dev/null &
 
-            - name: Expect HTTP 302 for deny
+            - name: Expect HTTP 302 for file
               run: npx npxie code-equals http://localhost:3000/bzz/f000000000000000000000000000000000000000000000000000000000000000 302
 
-            - name: Expect HTTP 200 for allow
-              run: npx npxie code-equals http://localhost:3000/bzz/1000000000000000000000000000000000000000000000000000000000000000 200
+            - name: Expect HTTP 302 for website
+              run: npx npxie code-equals http://localhost:3000/bzz/1000000000000000000000000000000000000000000000000000000000000000 302
