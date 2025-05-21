@@ -3,6 +3,7 @@ import { Dates, Types } from 'cafe-utility'
 import { EnvironmentVariables, getAppConfig, getServerConfig, getStampConfig, getTcpProxyConfig } from './config'
 import { logger, subscribeLogServerRequests } from './logger'
 import { createApp } from './server'
+import { setupSchema } from './setup'
 import { StampManager } from './stamp'
 import { startTcpProxy } from './tcp'
 
@@ -16,6 +17,8 @@ async function main() {
     logger.debug('server config', serverConfig)
     logger.debug('stamp config', stampConfig)
     logger.debug('tcp proxy config', tcpProxyConfig)
+
+    await setupSchema()
 
     const stampManager = new StampManager(appConfig.beeApiUrl, stampConfig)
     stampManager.start()
