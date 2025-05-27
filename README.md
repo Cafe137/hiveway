@@ -22,6 +22,7 @@ The database configuration is expected to be set in the `DATABASE_CONFIG` enviro
 | MODERATION_SECRET         | disabled                  | Require `authorization` header for moderation API |
 | INSTANCE_NAME             | `undefined`               | Name of the instance to match rules.              |
 | REMOVE_PIN_HEADER         | `true`                    | Removes swarm-pin header on all proxy requests.   |
+| ALLOW_GSOC_UPLOADS_ONLY   | `false`                   | Only allow GSOC uploads, not other POST endpoints |
 | POSTAGE_STAMP             | `undefined`               | Hardcoded batch ID for uploads.                   |
 | POSTAGE_DEPTH             | `undefined`               | Batch depth for autobuy.                          |
 | POSTAGE_AMOUNT            | `undefined`               | Batch amount for autobuy.                         |

@@ -172,7 +172,8 @@ export function createApp(config: AppConfig, stampManager: StampManager): Applic
         removePinHeader: config.removePinHeader ?? true,
         stampManager,
         hostname: config.hostname,
-        instanceName: config.instanceName
+        instanceName: config.instanceName,
+        allowGsocUploadsOnly: config.allowGsocUploadsOnly
     })
 
     if (config.homepage) {

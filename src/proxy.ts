@@ -36,6 +36,7 @@ interface Options {
     instanceName?: string
     stampManager: StampManager
     hostname?: string
+    allowGsocUploadsOnly?: boolean
 }
 
 export function createProxyEndpoints(app: Application, options: Options) {
@@ -74,9 +75,18 @@ export function createProxyEndpoints(app: Application, options: Options) {
         }
         await fetchAndRespond('GET', req.path, req.query, req.headers, req.body, res, options)
     })
-    app.post(POST_PROXY_ENDPOINTS, async (req, res) => {
-        await fetchAndRespond('POST', req.path, req.query, req.headers, req.body, res, options)
-    })
+
+    if (options.allowGsocUploadsOnly) {
+        // Only enable /soc/* POST endpoint when GSOC-only mode is enabled
+        app.post(['/soc/*'], async (req, res) => {
+            await fetchAndRespond('POST', req.path, req.query, req.headers, req.body, res, options)
+        })
+    } else {
+        // Enable all POST endpoints when in normal mode
+        app.post(POST_PROXY_ENDPOINTS, async (req, res) => {
+            await fetchAndRespond('POST', req.path, req.query, req.headers, req.body, res, options)
+        })
+    }
 }
 
 async function fetchAndRespond(

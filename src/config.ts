@@ -10,6 +10,7 @@ export interface AppConfig {
     removePinHeader?: boolean
     readinessCheck?: boolean
     homepage?: string
+    allowGsocUploadsOnly?: boolean
 }
 
 export interface ServerConfig {
@@ -39,6 +40,7 @@ export type EnvironmentVariables = Partial<{
     // Proxy
     BEE_API_URL: string
     AUTH_SECRET: string
+    ALLOW_GSOC_UPLOADS_ONLY: string
 
     // Server
     PORT: string
@@ -91,7 +93,8 @@ export function getAppConfig(env: EnvironmentVariables): AppConfig {
         moderationSecret: env.MODERATION_SECRET,
         instanceName: env.INSTANCE_NAME,
         removePinHeader: env.REMOVE_PIN_HEADER ? env.REMOVE_PIN_HEADER === 'true' : true,
-        homepage: env.HOMEPAGE
+        homepage: env.HOMEPAGE,
+        allowGsocUploadsOnly: env.ALLOW_GSOC_UPLOADS_ONLY ? env.ALLOW_GSOC_UPLOADS_ONLY === 'true' : false
     }
 }
 
