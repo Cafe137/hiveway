@@ -77,7 +77,7 @@ export async function setupSchema() {
             `CREATE TABLE \`typeHints\` (
         \`id\` int NOT NULL AUTO_INCREMENT,
         \`byteStart\` int NOT NULL,
-        \`byteOffset\` int NOT NULL,
+        \`byteLength\` int NOT NULL,
         \`hash\` varchar(64) NOT NULL,
         \`label\` varchar(32) NOT NULL,
         \`createdAt\` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

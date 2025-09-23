@@ -5,7 +5,7 @@ export type TypeHintsRowId = number & { __brand: 'TypeHintsRowId' }
 export interface TypeHintsRow {
     id: TypeHintsRowId
     byteStart: number
-    byteOffset: number
+    byteLength: number
     hash: string
     label: string
     createdAt: Date
@@ -13,7 +13,7 @@ export interface TypeHintsRow {
 
 export interface NewTypeHintsRow {
     byteStart: number
-    byteOffset: number
+    byteLength: number
     hash: string
     label: string
     createdAt?: Date | null

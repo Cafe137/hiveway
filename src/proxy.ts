@@ -173,7 +173,7 @@ async function fetchAndRespond(
 
             const matchingTypeHint = typeHints.find(typeHint => {
                 const actualHash = Binary.keccak256(
-                    sliceFn.call(response.data, typeHint.byteStart, typeHint.byteOffset)
+                    sliceFn.call(response.data, typeHint.byteStart, typeHint.byteLength)
                 )
                 const expectedHash = Binary.hexToUint8Array(typeHint.hash)
                 return Binary.equals(actualHash, expectedHash)
