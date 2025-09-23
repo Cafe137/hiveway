@@ -1,11 +1,12 @@
 import axios from 'axios'
-import { Cache, Dates, Objects, Strings, Types } from 'cafe-utility'
+import { Binary, Cache, Dates, Objects, Strings, Types } from 'cafe-utility'
 import { Application, Response } from 'express'
 import { IncomingHttpHeaders } from 'http'
 import { subdomainToBzz } from './bzz-link'
 import { AllowedUserAgents } from './database/AllowedUserAgents'
 import { Rules } from './database/Rules'
 import { Settings, SettingsRow, SettingsRowId } from './database/Settings'
+import { TypeHints, TypeHintsRow } from './database/TypeHints'
 import { logger } from './logger'
 import { getNotFoundPage } from './not-found'
 import { StampManager } from './stamp'
@@ -153,16 +154,41 @@ async function fetchAndRespond(
         }
 
         let isHtml = false
+        let typeLabel: string | null = null
 
-        if (response.headers['content-type'] === 'text/html') {
-            isHtml = true
-        } else if ((response.headers['content-disposition'] || '').toLowerCase().includes('.htm')) {
-            isHtml = true
-        } else {
-            const sliceFn = Objects.getDeep(response.data, 'slice')
-            if (Types.isFunction(sliceFn)) {
-                const beginning = (sliceFn.call(response.data, 0, 50) as Buffer).toString('utf8')
-                isHtml = beginning.toLowerCase().includes('<!doctype html')
+        const typeHints = await Cache.get<TypeHintsRow[]>('typeHints', Dates.minutes(1), async () => {
+            try {
+                const rows = await TypeHints.getMany()
+                return rows
+            } catch (error) {
+                logger.error('failed to query type hints', error)
+                return []
+            }
+        })
+
+        const sliceFn = Objects.getDeep(response.data, 'slice')
+        if (Types.isFunction(sliceFn)) {
+            const beginning = (sliceFn.call(response.data, 0, 50) as Buffer).toString('utf8')
+            isHtml = beginning.toLowerCase().includes('<!doctype html')
+
+            const matchingTypeHint = typeHints.find(typeHint => {
+                const actualHash = Binary.keccak256(
+                    sliceFn.call(response.data, typeHint.byteStart, typeHint.byteOffset)
+                )
+                const expectedHash = Binary.hexToUint8Array(typeHint.hash)
+                return Binary.equals(actualHash, expectedHash)
+            })
+
+            if (matchingTypeHint) {
+                typeLabel = matchingTypeHint.label
+            }
+        }
+
+        if (!isHtml) {
+            if (response.headers['content-type'] === 'text/html') {
+                isHtml = true
+            } else if ((response.headers['content-disposition'] || '').toLowerCase().includes('.htm')) {
+                isHtml = true
             }
         }
 
@@ -178,7 +204,11 @@ async function fetchAndRespond(
             return row || DEFAULT_SETTINGS
         })
 
-        let allowed = path.includes('.eth')
+        const isEns = path.includes('.eth')
+
+        let allowed = typeLabel
+            ? true
+            : isEns
             ? settings.defaultEnsRule === 'allow'
             : isHtml
             ? settings.defaultWebsiteRule === 'allow'
