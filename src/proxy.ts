@@ -3,13 +3,9 @@ import { Cache, Dates, Objects, Strings, Types } from 'cafe-utility'
 import { Application, Response } from 'express'
 import { IncomingHttpHeaders } from 'http'
 import { subdomainToBzz } from './bzz-link'
-import {
-    getAllowedUserAgentsRows,
-    getOnlyRulesRowOrNull,
-    getOnlySettingsRowOrNull,
-    SettingsRow,
-    SettingsRowId
-} from './database/Schema'
+import { AllowedUserAgents } from './database/AllowedUserAgents'
+import { Rules } from './database/Rules'
+import { Settings, SettingsRow, SettingsRowId } from './database/Settings'
 import { logger } from './logger'
 import { getNotFoundPage } from './not-found'
 import { StampManager } from './stamp'
@@ -178,7 +174,7 @@ async function fetchAndRespond(
             if (!options.instanceName) {
                 return DEFAULT_SETTINGS
             }
-            const row = await getOnlySettingsRowOrNull({ name: options.instanceName })
+            const row = await Settings.getOneOrNull({ name: options.instanceName })
             return row || DEFAULT_SETTINGS
         })
 
@@ -190,7 +186,7 @@ async function fetchAndRespond(
 
         const userAgents = await Cache.get<string[]>('user-agents', Dates.minutes(1), async () => {
             try {
-                const rows = await getAllowedUserAgentsRows()
+                const rows = await AllowedUserAgents.getMany()
                 return rows.map(x => x.userAgent)
             } catch (error) {
                 logger.error('failed to query user agents', error)
@@ -207,7 +203,7 @@ async function fetchAndRespond(
         const currentCid = Strings.searchSubstring(path, x => x.length > 48 && x.startsWith('bah'))
         const currentHash = Strings.searchHex(path, 64)
         const hash = currentCid || currentHash
-        const rule = hash ? await getOnlyRulesRowOrNull({ hash }).catch(() => null) : null
+        const rule = hash ? await Rules.getOneOrNull({ hash }).catch(() => null) : null
 
         if (rule) {
             if (rule.mode === 'deny') {

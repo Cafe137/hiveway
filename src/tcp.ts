@@ -1,7 +1,7 @@
 import { Dates } from 'cafe-utility'
 import { createServer, Socket } from 'net'
 import { TcpProxyConfig } from './config'
-import { getOnlyTcpProxySourcesRowOrNull } from './database/Schema'
+import { TcpProxySources } from './database/TcpProxySources'
 import { logger } from './logger'
 
 export function startTcpProxy(config: TcpProxyConfig) {
@@ -14,7 +14,7 @@ export function startTcpProxy(config: TcpProxyConfig) {
                 destinationSocket.destroy()
             }
         })
-        const row = await getOnlyTcpProxySourcesRowOrNull({ origin: clientSocket.remoteAddress })
+        const row = await TcpProxySources.getOneOrNull({ origin: clientSocket.remoteAddress })
         if (!row) {
             clientSocket.end()
             return
