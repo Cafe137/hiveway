@@ -24,6 +24,12 @@ jobs:
             - name: Build
               run: npm run build
 
+            - name: Run bee-dev
+              run: npx bee-dev &
+
+            - name: Wait for bee-dev
+              run: npx npxie await http://localhost:1633/stamps
+
             - name: Run gateway
               run: |
                   export DATABASE_CONFIG="{}"
